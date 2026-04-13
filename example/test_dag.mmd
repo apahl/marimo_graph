@@ -1,0 +1,15 @@
+---
+config:
+  look: handdrawn
+  theme: neutral
+  title: "Marimo DAG: test_2.py"
+---
+flowchart LR
+    cell_2["<b>Cell 2</b><br/>Define the dataframe"]
+    cell_3["<b>filter_dataframe</b><br/>Filter the dataframe"]
+    cell_4["<b>sort</b><br/>Sort the values"]
+    cell_5["<b>Cell 5</b><br/>Concatenate everything"]
+    cell_2 --> cell_3
+    cell_2 --> cell_4
+    cell_3 --> cell_5
+    cell_4 --> cell_5

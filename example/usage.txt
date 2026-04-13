@@ -1,0 +1,22 @@
+As command line tool:
+```Bash
+python ./tools/marimo_dag_to_mermaid.py ./test.py -o ./test_dag.mmd
+```
+
+Directly from within marimo:
+```Python
+@app.cell
+def _():
+    import marimo as mo
+
+    import sys
+    sys.path.append('./libs')
+    from marimo_dag_to_mermaid import mermaid_from_path
+
+    return mermaid_from_path, mo, pd
+
+@app.cell
+def _(mermaid_from_path, mo):
+    mo.mermaid(mermaid_from_path(__file__))
+    return
+```
