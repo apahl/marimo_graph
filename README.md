@@ -2,11 +2,15 @@
 
 Generate Mermaid flowcharts from Marimo notebook Python files.
 
-This project parses Marimo cells from a `.py` notebook file, infers dependencies from function arguments and return values, and produces a Mermaid flowchart representation of the cell DAG.
+![graph](example/graph.png)
 
-## What It Does
+This project parses Marimo cells from a `.py` notebook file, infers dependencies from function arguments and return values, and produces a Mermaid flowchart representation of the cell DAG. It can also generated graphs directly inside a Marimo notebook.
+
+## HOw it works
 
 - Detects Marimo cells decorated with `@app.cell` (and `@cell` fallback).
+- When a cell has been re-named, the name of the cell is used, otherwise incremental numbers are used.
+- Doc comments at the top of cells can used to give additional comments.
 - Builds dependency edges from:
   - Cell input arguments (what a cell consumes)
   - Returned names (what a cell produces)
@@ -16,25 +20,26 @@ This project parses Marimo cells from a `.py` notebook file, infers dependencies
 - Supports optional inline icon metadata in cell docstrings using:
   - `::icon:path/to/icon.svg::`
 
-## Project Structure
-
-- `marimo_dag_to_mermaid.py`: Main script and library functions.
-- `example/test.py`: Example Marimo notebook source.
-- `example/test_dag.mmd`: Example generated Mermaid output.
-- `example/usage.txt`: Usage examples (CLI and in-notebook rendering).
 
 ## Requirements
 
-- Python 3.10+ recommended (uses modern type hints).
+- Python 3.10+ recommended.
 - No external dependencies required for DAG generation.
 
 ## Installation
 
-Clone the repository and run directly with Python.
+Clone the repository and install with pip.
 
 ```bash
 git clone <your-repo-url>
 cd marimo_graph
+pip install .
+marimo-dag-to-mermaid --help
+```
+
+You can also run the script directly without installing:
+
+```bash
 python marimo_dag_to_mermaid.py --help
 ```
 
@@ -45,37 +50,40 @@ python marimo_dag_to_mermaid.py --help
 From the project root:
 
 ```bash
-python marimo_dag_to_mermaid.py example/test.py -o example/test_dag.mmd
+marimo-dag-to-mermaid example/test.py -o example/test_dag.mmd
 ```
 
 If `-o` is omitted, Mermaid output is printed to stdout:
 
 ```bash
-python marimo_dag_to_mermaid.py example/test.py
+marimo-dag-to-mermaid example/test.py
+```
+
+Equivalent direct-script form:
+
+```bash
+python marimo_dag_to_mermaid.py example/test.py -o example/test_dag.mmd
 ```
 
 ### 2) Inside a Marimo Notebook
 
-Based on `example/usage.txt`, import and render directly:
+The graphs can be rendered directly in the Marimo notebooks:
 
 ```python
-@app.cell
-def _():
-    import marimo as mo
+# Cell 1
+import marimo as mo
 
-    import sys
-    sys.path.append('./libs')
-    from marimo_dag_to_mermaid import mermaid_from_path
+from marimo_dag_to_mermaid import mermaid_from_path
 
-    return mermaid_from_path, mo
+# Cell 2..X: Do stuff
 
-@app.cell
-def _(mermaid_from_path, mo):
-    mo.mermaid(mermaid_from_path(__file__))
-    return
+#Cell Y:
+mo.mermaid(mermaid_from_path(__file__))
 ```
 
-Note: In this repository layout, you can typically import from project root without appending `./libs`.
+The graph-creating cell has to be run manually, a re-run is not triggered automatically when the notebook is changed.
+
+![notebook](example/notebook.png)
 
 ## API
 
